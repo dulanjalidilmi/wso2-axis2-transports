@@ -32,6 +32,7 @@ import org.apache.axis2.transport.base.ManagementSupport;
 import org.apache.axis2.transport.base.event.TransportErrorListener;
 import org.apache.axis2.transport.base.event.TransportErrorSource;
 import org.apache.axis2.transport.base.event.TransportErrorSourceSupport;
+import org.apache.axis2.transport.mail.auth.AuthUtils;
 
 import javax.mail.*;
 import javax.mail.internet.ContentType;
@@ -96,7 +97,6 @@ public class MailTransportListener extends AbstractPollingTransportListener<Poll
         int retryCount = 0;
         int maxRetryCount = entry.getMaxRetryCount();
         long reconnectionTimeout = entry.getReconnectTimeout();
-        Session session = entry.getSession();
         Store store = null;
         Folder folder = null;
         boolean nextPollScheduled = false;
@@ -105,22 +105,18 @@ public class MailTransportListener extends AbstractPollingTransportListener<Poll
             try {
                 retryCount++;
                 if (log.isDebugEnabled()) {
-                    log.debug("Attempting to connect to POP3/IMAP server for : " +
-                        entry.getEmailAddress() + " using " + session.getProperties());
+                    log.debug("Attempting to connect to POP3/IMAP server for : " + entry.getEmailAddress());
                 }
 
-                store = session.getStore(entry.getProtocol());
-
-                if (entry.getUserName() != null && entry.getPassword() != null) {
-                    store.connect(entry.getUserName(), entry.getPassword());
-                } else {
-                    handleException("Unable to locate username and password for mail login", null);
-                }
+                store = AuthUtils.connect(entry);
 
                 // were we able to connect?
                 connected = store.isConnected();
 
                 if (connected) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Successfully connected to mail server");
+                    }
                     if (entry.getFolder() != null) {
                         folder = store.getFolder(entry.getFolder());
                     } else {
@@ -166,7 +162,7 @@ public class MailTransportListener extends AbstractPollingTransportListener<Poll
                 Message[] messages = folder.getMessages();
 
                 if (log.isDebugEnabled()) {
-                    log.debug(messages.length + " messgaes in folder : " + folder);
+                    log.debug(messages.length + " messages in folder : " + folder);
                 }
 
                 latch = new CountDownLatch(total);
@@ -175,7 +171,7 @@ public class MailTransportListener extends AbstractPollingTransportListener<Poll
                     try {
                         String[] status = messages[i].getHeader("Status");
                         if (status != null && status.length == 1 && status[0].equals("RO")) {
-                            // some times the mail server sends a special mail message which is
+                            // sometimes the mail server sends a special mail message which is
                             // not relavent in processing. ignore this message.
                             if (log.isDebugEnabled()) {
                                 log.debug("Skipping message # : " + messages[i].getMessageNumber()
