@@ -217,9 +217,9 @@
                 <version>${jta-spec.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.mail</groupId>
-                <artifactId>jakarta.mail</artifactId>
-                <version>${jakarta.mail.version}</version>
+                <groupId>javax.mail</groupId>
+                <artifactId>mail</artifactId>
+                <version>1.4.1</version>
             </dependency>
             <dependency>
                 <groupId>com.icegreen</groupId>
@@ -694,6 +694,5 @@
         <version.org.wso2.orbit.javax.activation>1.1.1.wso2v2</version.org.wso2.orbit.javax.activation>
         <httpclient.wso2.version>4.5.13.wso2v1</httpclient.wso2.version>
         <com.google.code.gson.version>2.9.0</com.google.code.gson.version>
-        <jakarta.mail.version>1.6.7</jakarta.mail.version>
     </properties>
 </project>

@@ -60,7 +60,8 @@ public abstract class OAuthHandler implements AuthHandler {
                 store.connect(username, getToken());
                 return store;
             } catch (Exception e) {
-                log.error("An error occurred while trying to connect to mail server.");
+                log.error("An error occurred while trying to connect to mail server for " + username + " via " +
+                        protocol + " protocol.");
                 if (e.getMessage().toLowerCase().contains(OAuthConstants.AUTHENTICATE_FAIL_EXCEPTION_MESSAGE)) {
                     removeTokenFromCache();
                     return retryToConnect(store);

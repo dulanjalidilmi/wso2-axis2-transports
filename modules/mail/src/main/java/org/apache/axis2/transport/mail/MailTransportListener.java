@@ -32,6 +32,7 @@ import org.apache.axis2.transport.base.ManagementSupport;
 import org.apache.axis2.transport.base.event.TransportErrorListener;
 import org.apache.axis2.transport.base.event.TransportErrorSource;
 import org.apache.axis2.transport.base.event.TransportErrorSourceSupport;
+import org.apache.axis2.transport.mail.auth.AuthConstants;
 import org.apache.axis2.transport.mail.auth.AuthUtils;
 
 import javax.mail.*;
@@ -104,9 +105,15 @@ public class MailTransportListener extends AbstractPollingTransportListener<Poll
         while (!connected) {
             try {
                 retryCount++;
-                if (log.isDebugEnabled()) {
-                    log.debug("Attempting to connect to POP3/IMAP server for : " + entry.getEmailAddress());
+                if(entry.getAuthMode().equalsIgnoreCase(AuthConstants.OAUTH)) {
+                    log.debug("Attempting to connect to " + entry.getProtocol() + " server for " +
+                            entry.getEmailAddress() + " with grant-type " + entry.getOAuthConfig().getGrantType());
+                } else {
+                    log.debug("Attempting to connect to " + entry.getProtocol() + " server for : " +
+                            entry.getEmailAddress());
                 }
+//                todo
+                // lets add more infor
 
                 store = AuthUtils.connect(entry);
 

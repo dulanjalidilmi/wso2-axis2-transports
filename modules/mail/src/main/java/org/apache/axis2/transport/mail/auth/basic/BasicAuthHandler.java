@@ -22,6 +22,7 @@ import org.apache.axis2.transport.mail.auth.AuthHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
 
@@ -42,14 +43,17 @@ public class BasicAuthHandler implements AuthHandler {
     @Override
     public Store connect(Session session, String protocol) throws AuthException {
         Store store = null;
-        if (log.isDebugEnabled()) {
-            log.debug("Connecting to email server via basic auth protocol");
-        }
+        // lets remove this is debugEnaled
+        // ssl certificate
+        log.debug("Connecting to email server via basic auth protocol");
         try {
             store = session.getStore(protocol);
             store.connect(username, password);
             return store;
-        } catch (Exception e) {
+        } catch (MessagingException e) {
+            // check exceptions
+            log.error("An error occurred while trying to connect to mail server for " + username + " via " +
+                    protocol + " protocol.");
             throw new AuthException(e.getMessage(), e);
         }
     }

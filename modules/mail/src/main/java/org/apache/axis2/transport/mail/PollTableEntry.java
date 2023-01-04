@@ -253,12 +253,12 @@ public class PollTableEntry extends AbstractPollTableEntry {
 
             List<Parameter> params = paramIncl.getParameters();
             Properties props = new Properties();
-            Map<String, String> mailTransportProperties = new HashMap<String, String>();
+            Map<String, String> mailTransportOAuthProperties = new HashMap<String, String>();
             for (Parameter p : params) {
                 if (p.getName().startsWith("mail.")) {
                     props.setProperty(p.getName(), (String) p.getValue());
-                } else if (p.getName().startsWith("transport.mail.")) {
-                    mailTransportProperties.put(p.getName(), (String) p.getValue());
+                } else if (p.getName().startsWith("transport.mail.oauth")) {
+                    mailTransportOAuthProperties.put(p.getName(), (String) p.getValue());
                 }
 
                 if (MailConstants.MAIL_POP3_USERNAME.equals(p.getName()) ||
@@ -278,13 +278,19 @@ public class PollTableEntry extends AbstractPollTableEntry {
             }
 
             if(authMode.equalsIgnoreCase(AuthConstants.OAUTH)) {
-                oAuthConfig.setGrantType(mailTransportProperties.get(OAuthConstants.TRANSPORT_MAIL_OAUTH_GRANT_TYPE));
-                oAuthConfig.setClientId(mailTransportProperties.get(OAuthConstants.TRANSPORT_MAIL_OAUTH_CLIENT_ID));
-                oAuthConfig.setClientSecret(mailTransportProperties.get(OAuthConstants.TRANSPORT_MAIL_OAUTH_CLIENT_SECRET));
-                oAuthConfig.setAccessToken(mailTransportProperties.get(OAuthConstants.TRANSPORT_MAIL_OAUTH_ACCESS_TOKEN));
-                oAuthConfig.setRefreshToken(mailTransportProperties.get(OAuthConstants.TRANSPORT_MAIL_OAUTH_REFRESH_TOKEN));
-                oAuthConfig.setScope(mailTransportProperties.get(OAuthConstants.TRANSPORT_MAIL_OAUTH_SCOPE));
-                oAuthConfig.setTokenUrl(mailTransportProperties.get(OAuthConstants.TRANSPORT_MAIL_OAUTH_TOKEN_URL));
+                oAuthConfig.setGrantType(
+                        mailTransportOAuthProperties.get(OAuthConstants.TRANSPORT_MAIL_OAUTH_GRANT_TYPE));
+                oAuthConfig.setClientId(
+                        mailTransportOAuthProperties.get(OAuthConstants.TRANSPORT_MAIL_OAUTH_CLIENT_ID));
+                oAuthConfig.setClientSecret(
+                        mailTransportOAuthProperties.get(OAuthConstants.TRANSPORT_MAIL_OAUTH_CLIENT_SECRET));
+                oAuthConfig.setAccessToken(
+                        mailTransportOAuthProperties.get(OAuthConstants.TRANSPORT_MAIL_OAUTH_ACCESS_TOKEN));
+                oAuthConfig.setRefreshToken(
+                        mailTransportOAuthProperties.get(OAuthConstants.TRANSPORT_MAIL_OAUTH_REFRESH_TOKEN));
+                oAuthConfig.setScope(mailTransportOAuthProperties.get(OAuthConstants.TRANSPORT_MAIL_OAUTH_SCOPE));
+                oAuthConfig.setTokenUrl(
+                        mailTransportOAuthProperties.get(OAuthConstants.TRANSPORT_MAIL_OAUTH_TOKEN_URL));
                 oAuthConfig.setTokenId(UIDGenerator.generateUID());
                 setOAuthConfig(oAuthConfig);
                 if (StringUtils.isNotBlank(oAuthConfig.getAccessToken())) {
